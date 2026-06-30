@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ระบบย่อลิงก์ Mutec</title>
+  <title>ระบบย่อลิงก์ & จัดการ QR Code อัจฉริยะ</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -104,7 +104,7 @@
           <table class="w-full text-left border-collapse">
             <thead>
               <tr class="bg-gray-50 border-b border-gray-100 text-gray-600 font-semibold text-sm">
-                <th class="p-4">ลิงก์เดิม</th>
+                <th class="p-4">ลิงก์เดิมปลายทาง</th>
                 <th class="p-4">ลิงก์ย่อที่สร้าง</th>
                 <th class="p-4 text-center">สถิติคนคลิก</th>
                 <th class="p-4 text-center">จัดการเครื่องมือ</th>
@@ -124,14 +124,15 @@
       <h2 class="text-2xl font-bold text-gray-800">ระบบตรวจสอบความปลอดภัยของลิงก์</h2>
       <p class="text-gray-500">คุณกำลังสแกนผ่านระบบตรวจสอบสิทธิ์อัจฉริยะ โปรดคลิกที่ปุ่มด้านล่างเพื่อไปยังปลายทาง</p>
       
-      <div id="ad-placeholder" class="p-4 bg-yellow-50 border border-yellow-200 rounded-xl hidden">
-        <p class="text-xs font-bold text-yellow-600 tracking-wider uppercase mb-1">ผู้สนับสนุนโฆษณา</p>
-        <h4 id="ad-title" class="font-bold text-gray-800"></h4>
-        <p id="ad-desc" class="text-sm text-gray-600 mt-1"></p>
+      <div id="ad-placeholder" class="p-5 bg-yellow-50 border border-yellow-200 rounded-2xl hidden space-y-3 text-center max-w-md mx-auto shadow-inner">
+        <p class="text-xs font-bold text-yellow-600 tracking-wider uppercase">📢 ผู้สนับสนุนระบบ</p>
+        <img id="ad-image" src="" class="w-full max-h-48 object-cover rounded-xl shadow-md hidden mx-auto" alt="Ad Banner">
+        <h4 id="ad-title" class="font-bold text-gray-800 text-base"></h4>
+        <p id="ad-desc" class="text-sm text-gray-600"></p>
       </div>
 
       <div class="pt-4">
-        <a id="btn-redirect" href="#" target="_self" class="inline-flex items-center space-x-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold px-8 py-4 rounded-xl shadow-lg transform hover:scale-105 transition duration-200 text-lg">
+        <a id="btn-redirect" href="#" target="_blank" class="inline-flex items-center space-x-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold px-8 py-4 rounded-xl shadow-lg transform hover:scale-105 transition duration-200 text-lg">
           <span>ดำเนินการเปิดลิงก์ปลายทาง</span> <i class="fa-solid fa-arrow-up-right-from-square"></i>
         </a>
       </div>
@@ -188,13 +189,14 @@
   </div>
 
   <footer class="bg-gray-800 text-gray-400 text-center py-4 text-xs border-t border-gray-700">
-    © 2026 ระบบย่อลิงก์โดย นายเอกวิทย์ สมาน หัวหน้าฝ่ายเทคโนโลยีสารสนเทศเพื่อการศึกษา
+    © 2026 ระบบการจัดการข้อมูลย่อลิงก์โดยทีมงานฝ่ายเทคโนโลยีสารสนเทศเพื่อการศึกษา
   </footer>
 
   <script>
     // ==========================================
     //  จุดตั้งค่าระบบหลัก (CONFIGURATION ZONE)
     // ==========================================
+    // ⚠️ อย่าลืมเช็ก URL เว็บแอปหลังบ้านให้ถูกต้องหลังทำการ Deploy ใหม่อีกครั้งนะครับ
     const API_URL = "https://script.google.com/macros/s/AKfycbzZFaouuTRVQK7N6t6bgO5vMgs9lQrjJwviUgW_5GQzqcl_Y9fQI_S1ht9ffvzey16U/exec"; 
     const SYSTEM_LOGO_URL = "https://lh3.googleusercontent.com/d/1BNMJVVdlsWs_DB8lycNTcbZYpiumtIml"; 
     const SYSTEM_NAME_TITLE = "MUTEC ShortURL"; 
@@ -347,10 +349,10 @@
 
     async function openCreateModal() {
       const { value: url } = await Swal.fire({
-        title: 'ย่อลิงก์ใหม่',
+        title: 'ย่อลิงก์ปลายทางชิ้นใหม่',
         input: 'url',
-        inputLabel: 'กรอก URL ',
-        inputPlaceholder: ' ',
+        inputLabel: 'กรอก URL ที่ต้องการย่อลงระบบ',
+        inputPlaceholder: 'https://example.com/long-story-short',
         showCancelButton: true,
         confirmButtonText: 'สร้างลิงก์เลย',
         cancelButtonText: 'ยกเลิก',
@@ -463,7 +465,6 @@
       }
     }
 
-    // ฟังก์ชัน Real-time ดึงข้อมูลสถิติและลิงก์ปลายทางมาปักหมุดไว้ทันทีที่หน้าเว็บโหลดขึ้นมา
     async function loadScanPage(shortId) {
       document.getElementById('auth-section').classList.add('hidden');
       document.getElementById('dashboard-section').classList.add('hidden');
@@ -477,19 +478,28 @@
         const result = await response.json();
 
         if (result.success) {
-          // ผูกลิงก์ปลายทางเข้ากับปุ่มทันทีแบบ Real-time
           document.getElementById('btn-redirect').href = result.link.originalUrl;
           
           if (result.ad) {
+            // แสดงข้อความโฆษณาในกล่องแสดงผลหน้าเว็บ
             document.getElementById('ad-title').innerText = result.ad.title;
             document.getElementById('ad-desc').innerText = result.ad.description;
+            
+            const adImgElement = document.getElementById('ad-image');
+            if (result.ad.imageUrl && result.ad.imageUrl.trim() !== "") {
+              adImgElement.src = result.ad.imageUrl;
+              adImgElement.classList.remove('hidden');
+            } else {
+              adImgElement.classList.add('hidden');
+            }
             document.getElementById('ad-placeholder').classList.remove('hidden');
 
+            // แสดงโฆษณาเป็นแบบ Modal Popup SweetAlert2 ร่วมด้วยเพื่อความเด่นชัด
             Swal.fire({
               title: `<strong>${result.ad.title}</strong>`,
               html: `
                 <div class="space-y-3">
-                  ${result.ad.imageUrl ? `<img src="${result.ad.imageUrl}" class="w-full max-h-48 object-cover rounded-lg shadow-sm" alt="Ads">` : ''}
+                  ${result.ad.imageUrl ? `<img src="${result.ad.imageUrl}" class="w-full max-h-48 object-cover rounded-lg shadow-sm mx-auto" alt="Ads">` : ''}
                   <p class="text-sm text-gray-600">${result.ad.description}</p>
                 </div>
               `,
