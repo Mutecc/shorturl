@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ระบบย่อลิงก์ & จัดการ QR Code อัจฉริยะ</title>
+  <title>ระบบย่อลิงก์ Mutec</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -104,7 +104,7 @@
           <table class="w-full text-left border-collapse">
             <thead>
               <tr class="bg-gray-50 border-b border-gray-100 text-gray-600 font-semibold text-sm">
-                <th class="p-4">ลิงก์เดิมปลายทาง</th>
+                <th class="p-4">ลิงก์เดิม</th>
                 <th class="p-4">ลิงก์ย่อที่สร้าง</th>
                 <th class="p-4 text-center">สถิติคนคลิก</th>
                 <th class="p-4 text-center">จัดการเครื่องมือ</th>
@@ -131,7 +131,7 @@
       </div>
 
       <div class="pt-4">
-        <a id="btn-redirect" href="#" target="_blank" class="inline-flex items-center space-x-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold px-8 py-4 rounded-xl shadow-lg transform hover:scale-105 transition duration-200 text-lg">
+        <a id="btn-redirect" href="#" target="_self" class="inline-flex items-center space-x-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold px-8 py-4 rounded-xl shadow-lg transform hover:scale-105 transition duration-200 text-lg">
           <span>ดำเนินการเปิดลิงก์ปลายทาง</span> <i class="fa-solid fa-arrow-up-right-from-square"></i>
         </a>
       </div>
@@ -188,18 +188,17 @@
   </div>
 
   <footer class="bg-gray-800 text-gray-400 text-center py-4 text-xs border-t border-gray-700">
-    &copy; 2026 ระบบการจัดการข้อมูลย่อลิงก์โดยทีมงานฝ่ายเทคโนโลยีสารสนเทศเพื่อการศึกษา
+    © 2026 ระบบย่อลิงก์โดย นายเอกวิทย์ สมาน หัวหน้าฝ่ายเทคโนโลยีสารสนเทศเพื่อการศึกษา
   </footer>
 
   <script>
     // ==========================================
     //  จุดตั้งค่าระบบหลัก (CONFIGURATION ZONE)
     // ==========================================
-    const API_URL = "https://script.google.com/macros/s/AKfycbzZFaouuTRVQK7N6t6bgO5vMgs9lQrjJwviUgW_5GQzqcl_Y9fQI_S1ht9ffvzey16U/exec"; // URL ของ Google Apps Script Web App
-    const SYSTEM_LOGO_URL = "https://lh3.googleusercontent.com/d/1BNMJVVdlsWs_DB8lycNTcbZYpiumtIml"; // URL โลโก้กลางของระบบ
-    const SYSTEM_NAME_TITLE = "MUTEC ShortURL"; // ชื่อหัวระบบเริ่มต้น
+    const API_URL = "https://script.google.com/macros/s/AKfycbzsTui6nU7pkv00KCvU-vdjxWXIBAilMfv8q7YmdhyCTcslo_UMSqB1eYqhJs99CH8oeQ/exec"; 
+    const SYSTEM_LOGO_URL = "https://lh3.googleusercontent.com/d/1BNMJVVdlsWs_DB8lycNTcbZYpiumtIml"; 
+    const SYSTEM_NAME_TITLE = "MUTEC ShortURL"; 
     
-    // ตั้งค่า URL หลักของ GitHub Page อัตโนมัติ
     const BASE_FRONTEND_URL = window.location.origin + window.location.pathname;
 
     let currentUser = JSON.parse(localStorage.getItem('shortUrlUser')) || null;
@@ -207,10 +206,8 @@
     let currentSelectedShortUrl = '';
 
     window.onload = function() {
-      // เริ่มต้นแมปปิ้งข้อมูลโลโก้และชื่อระบบจากตัวแปรด้านบนเข้าสู่ Elements
       initSystemConfigurations();
 
-      // ตรวจสอบพารามิเตอร์การแชร์เพื่อเปิดหน้าสแกน (?id=xxxx)
       const urlParams = new URLSearchParams(window.location.search);
       const shortId = urlParams.get('id');
       
@@ -222,15 +219,12 @@
     };
 
     function initSystemConfigurations() {
-      // ผูกค่าจากตัวแปร Global ไปยัง UI หน้าบ้าน
       document.getElementById('system-title-nav').innerText = SYSTEM_NAME_TITLE;
       
       if (SYSTEM_LOGO_URL && SYSTEM_LOGO_URL.trim() !== "") {
         const logoImg = document.getElementById('system-logo-nav');
         logoImg.src = SYSTEM_LOGO_URL;
-        logoImg.classList.remove('hidden'); // แสดงรูปภาพเมื่อมี URL
-        
-        // ผูกค่าไปยัง Input ปรับแต่ง QR Code เป็นค่าเริ่มต้นอัตโนมัติ
+        logoImg.classList.remove('hidden');
         document.getElementById('qr-logo-url').value = SYSTEM_LOGO_URL;
       }
     }
@@ -353,10 +347,10 @@
 
     async function openCreateModal() {
       const { value: url } = await Swal.fire({
-        title: 'ย่อลิงก์ปลายทางชิ้นใหม่',
+        title: 'ย่อลิงก์ใหม่',
         input: 'url',
-        inputLabel: 'กรอก URL ที่ต้องการย่อลงระบบ',
-        inputPlaceholder: 'https://example.com/long-story-short',
+        inputLabel: 'กรอก URL ',
+        inputPlaceholder: ' ',
         showCancelButton: true,
         confirmButtonText: 'สร้างลิงก์เลย',
         cancelButtonText: 'ยกเลิก',
@@ -469,6 +463,7 @@
       }
     }
 
+    // ฟังก์ชัน Real-time ดึงข้อมูลสถิติและลิงก์ปลายทางมาปักหมุดไว้ทันทีที่หน้าเว็บโหลดขึ้นมา
     async function loadScanPage(shortId) {
       document.getElementById('auth-section').classList.add('hidden');
       document.getElementById('dashboard-section').classList.add('hidden');
@@ -482,6 +477,7 @@
         const result = await response.json();
 
         if (result.success) {
+          // ผูกลิงก์ปลายทางเข้ากับปุ่มทันทีแบบ Real-time
           document.getElementById('btn-redirect').href = result.link.originalUrl;
           
           if (result.ad) {
@@ -497,7 +493,7 @@
                   <p class="text-sm text-gray-600">${result.ad.description}</p>
                 </div>
               `,
-              confirmButtonText: 'เข้าสู่หน้าหลักระบุตัวตนระบบ',
+              confirmButtonText: 'รับทราบข้อมูลความปลอดภัย',
               confirmButtonColor: '#4f46e5'
             });
           }
