@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ระบบย่อลิงก์ & จัดการ QR Code อัจฉริยะ</title>
+  <title>ระบบย่อลิงก์ Mutec</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -146,7 +146,7 @@
 
       <div class="pt-4">
         <a id="btn-redirect" href="#" target="_blank" class="inline-flex items-center space-x-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold px-8 py-4 rounded-xl shadow-lg transform hover:scale-105 transition duration-200 text-lg">
-          <span>ดเปิดลิงก์ปลายทาง</span> <i class="fa-solid fa-arrow-up-right-from-square"></i>
+          <span>เปิดลิงก์ปลายทาง</span> <i class="fa-solid fa-arrow-up-right-from-square"></i>
         </a>
       </div>
     </div>
@@ -155,7 +155,6 @@
 
   <div id="qr-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4">
     <div class="bg-white rounded-2xl max-w-4xl w-full p-6 grid grid-cols-1 md:grid-cols-2 gap-6 max-h-[90vh] overflow-y-auto">
-      <button onclick="closeQrModal()" class="mt-6 text-gray-400 hover:text-gray-600 font-semibold text-sm">X ปิด</button>
       <div>
         <h3 class="text-lg font-bold text-gray-800 mb-4"><i class="fa-solid fa-sliders text-indigo-600 mr-2"></i>ปรับแต่งสไตล์ QR Code</h3>
         <div class="space-y-3 text-sm">
@@ -195,6 +194,7 @@
         </div>
       </div>
       <div class="flex flex-col items-center justify-center border-l pl-0 md:pl-6 pt-6 md:pt-0">
+        <button onclick="closeQrModal()" class="mt-6 text-gray-400 hover:text-gray-600 font-semibold text-sm">X ปิด</button>
         <p class="text-sm font-semibold text-gray-500 mb-4">รูปภาพแสดงผลตัวอย่างล่วงหน้า</p>
         <div id="qr-preview-container" class="p-4 bg-white border shadow-inner rounded-xl min-h-[250px] min-w-[250px] flex items-center justify-center"></div>
         
@@ -203,7 +203,7 @@
   </div>
 
   <footer class="bg-gray-800 text-gray-400 text-center py-4 text-xs border-t border-gray-700">
-    © 2026 Mutec ฝ่ายเทคโนโลยีสารสนเทศเพื่อการสื่อสารการศึกษา
+    © 2026 Mutec  <br> นายเอกวิทย์ สมาน <br> หัวหน้าฝ่ายเทคโนโลยีสารสนเทศเพื่อการสื่อสารการศึกษา
   </footer>
 
   <script>
