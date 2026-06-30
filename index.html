@@ -138,7 +138,7 @@
       <p class="text-gray-500">คุณกำลังสแกนผ่านระบบตรวจสอบสิทธิ์อัจฉริยะ โปรดคลิกที่ปุ่มด้านล่างเพื่อไปยังปลายทาง</p>
       
       <div id="ad-placeholder" class="p-5 bg-yellow-50 border border-yellow-200 rounded-2xl hidden space-y-3 text-center max-w-md mx-auto shadow-inner">
-        <p class="text-xs font-bold text-yellow-600 tracking-wider uppercase">📢 ผู้สนับสนุนระบบ</p>
+        <p class="text-xs font-bold text-yellow-600 tracking-wider uppercase">📢 สร้างโดย: นายเอกวิทย์ สมาน <br> หัวหน้าฝ่ายเทคโนโลยีสารสนเทศและการสื่อสารการศึกษา </p>
         <img id="ad-image" src="" class="w-full max-h-48 object-cover rounded-xl shadow-md hidden mx-auto" alt="Ad Banner">
         <h4 id="ad-title" class="font-bold text-gray-800 text-base"></h4>
         <p id="ad-desc" class="text-sm text-gray-600"></p>
@@ -146,7 +146,7 @@
 
       <div class="pt-4">
         <a id="btn-redirect" href="#" target="_blank" class="inline-flex items-center space-x-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold px-8 py-4 rounded-xl shadow-lg transform hover:scale-105 transition duration-200 text-lg">
-          <span>ดำเนินการเปิดลิงก์ปลายทาง</span> <i class="fa-solid fa-arrow-up-right-from-square"></i>
+          <span>ดเปิดลิงก์ปลายทาง</span> <i class="fa-solid fa-arrow-up-right-from-square"></i>
         </a>
       </div>
     </div>
@@ -155,6 +155,7 @@
 
   <div id="qr-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4">
     <div class="bg-white rounded-2xl max-w-4xl w-full p-6 grid grid-cols-1 md:grid-cols-2 gap-6 max-h-[90vh] overflow-y-auto">
+      <button onclick="closeQrModal()" class="mt-6 text-gray-400 hover:text-gray-600 font-semibold text-sm">X ปิด</button>
       <div>
         <h3 class="text-lg font-bold text-gray-800 mb-4"><i class="fa-solid fa-sliders text-indigo-600 mr-2"></i>ปรับแต่งสไตล์ QR Code</h3>
         <div class="space-y-3 text-sm">
@@ -196,13 +197,13 @@
       <div class="flex flex-col items-center justify-center border-l pl-0 md:pl-6 pt-6 md:pt-0">
         <p class="text-sm font-semibold text-gray-500 mb-4">รูปภาพแสดงผลตัวอย่างล่วงหน้า</p>
         <div id="qr-preview-container" class="p-4 bg-white border shadow-inner rounded-xl min-h-[250px] min-w-[250px] flex items-center justify-center"></div>
-        <button onclick="closeQrModal()" class="mt-6 text-gray-400 hover:text-gray-600 font-semibold text-sm">ปิดหน้าต่างการปรับแต่งนี้</button>
+        
       </div>
     </div>
   </div>
 
   <footer class="bg-gray-800 text-gray-400 text-center py-4 text-xs border-t border-gray-700">
-    © 2026 ระบบการจัดการข้อมูลย่อลิงก์โดยทีมงานฝ่ายเทคโนโลยีสารสนเทศเพื่อการศึกษา
+    © 2026 Mutec ฝ่ายเทคโนโลยีสารสนเทศเพื่อการสื่อสารการศึกษา
   </footer>
 
   <script>
@@ -353,7 +354,7 @@
     }
 
     async function fetchUserLinks() {
-      showGlobalLoading('กำลังดึงข้อมูลสถิติล่าสุด...');
+      showGlobalLoading('กำลังรีเฟรช...');
       try {
         const response = await fetch(API_URL, {
           method: 'POST',
@@ -395,10 +396,10 @@
 
     async function openCreateModal() {
       const { value: url } = await MySwal.fire({
-        title: 'ย่อลิงก์ปลายทางชิ้นใหม่',
+        title: 'ย่อลิงก์ใหม่',
         input: 'url',
         inputLabel: 'กรอก URL ที่ต้องการย่อลงระบบ',
-        inputPlaceholder: 'https://example.com/long-story-short',
+        inputPlaceholder: ' ตัวอย่าง https://www.mutec.ac.th',
         showCancelButton: true,
         confirmButtonText: 'สร้างลิงก์เลย',
         cancelButtonText: 'ยกเลิก',
@@ -408,7 +409,7 @@
       });
 
       if (url) {
-        showGlobalLoading('กำลังประมวลผลและสร้าง Short URL...');
+        showGlobalLoading('กำลังสร้าง Short URL...');
         try {
           const response = await fetch(API_URL, {
             method: 'POST',
@@ -437,7 +438,7 @@
       });
 
       if (confirm.isConfirmed) {
-        showGlobalLoading('กำลังลบข้อมูลออกจากระบบฐานข้อมูล...');
+        showGlobalLoading('กำลังลบข้อมูล...');
         try {
           const response = await fetch(API_URL, {
             method: 'POST',
@@ -451,7 +452,7 @@
             MySwal.fire('ล้มเหลว', result.message, 'error');
           }
         } catch (e) {
-          MySwal.fire('เกิดข้อผิดพลาด', 'ไม่สามารถเชื่อมระบบเพื่อลบข้อมูลได้', 'error');
+          MySwal.fire('เกิดข้อผิดพลาด', 'ไม่สามารถลบข้อมูลได้', 'error');
         }
       }
     }
@@ -517,7 +518,7 @@
       document.getElementById('dashboard-section').classList.add('hidden');
       document.getElementById('scan-section').classList.remove('hidden');
       
-      showGlobalLoading('กำลังตรวจสอบความปลอดภัยและโฆษณา...');
+      showGlobalLoading('กำลังโหลดหน้านี้...');
       
       try {
         const response = await fetch(API_URL, {
@@ -551,7 +552,7 @@
                   <p class="text-sm text-gray-600">${result.ad.description}</p>
                 </div>
               `,
-              confirmButtonText: 'เข้าสู่หน้าลิงก์ปลายทาง',
+              confirmButtonText: 'X ปิดโฆษณา',
               confirmButtonColor: '#4f46e5'
             });
           } else {
@@ -561,7 +562,7 @@
           MySwal.fire({
             icon: 'error',
             title: 'ไม่พบลิงก์นี้ในระบบ',
-            text: 'ลิงก์ย่อถูกลบออกไป หรือไม่เคยบันทึกข้อมูลรหัส ID ดังกล่าว',
+            text: 'ลิงก์ย่อถูกลบออกไปแล้ว...',
           });
         }
       } catch (err) {
