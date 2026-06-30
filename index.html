@@ -17,6 +17,19 @@
       font-family: 'Sarabun', sans-serif;
       background-color: #f3f4f6;
     }
+    /* ปรับแต่งดีไซน์ปุ่ม X ปิดมุมขวาบนของ SweetAlert2 ให้สวยงามคมชัดขึ้น */
+    .swal2-close {
+      font-size: 24px !important;
+      color: #9ca3af !important;
+      transition: color 0.2s ease;
+    }
+    .swal2-close:hover {
+      color: #4b5563 !important;
+      background: transparent !important;
+    }
+    .swal2-close:focus {
+      box-shadow: none !important;
+    }
   </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between">
@@ -193,10 +206,6 @@
   </footer>
 
   <script>
-    // ==========================================
-    //  จุดตั้งค่าระบบหลัก (CONFIGURATION ZONE)
-    // ==========================================
-    // ⚠️ อย่าลืมเช็ก URL เว็บแอปหลังบ้านให้ถูกต้องหลังทำการ Deploy ใหม่อีกครั้งนะครับ
     const API_URL = "https://script.google.com/macros/s/AKfycbzZFaouuTRVQK7N6t6bgO5vMgs9lQrjJwviUgW_5GQzqcl_Y9fQI_S1ht9ffvzey16U/exec"; 
     const SYSTEM_LOGO_URL = "https://lh3.googleusercontent.com/d/1BNMJVVdlsWs_DB8lycNTcbZYpiumtIml"; 
     const SYSTEM_NAME_TITLE = "MUTEC ShortURL"; 
@@ -206,6 +215,15 @@
     let currentUser = JSON.parse(localStorage.getItem('shortUrlUser')) || null;
     let activeQrStylingInstance = null;
     let currentSelectedShortUrl = '';
+
+    // =========================================================
+    // ✨ CONFIGURATION: ตั้งค่าเริ่มต้นของ SweetAlert2 ทั่วทั้งระบบ
+    // =========================================================
+    const MySwal = Swal.mixin({
+      showCloseButton: true, // เปิดใช้งานปุ่ม X มุมขวาบนของ Card ทุกกล่องอัตโนมัติ
+      confirmButtonColor: '#4f46e5',
+      cancelButtonColor: '#6b7280'
+    });
 
     window.onload = function() {
       initSystemConfigurations();
@@ -264,9 +282,20 @@
       }
     }
 
+    function showGlobalLoading(message = 'กำลังดำเนินการ...') {
+      Swal.fire({
+        title: message,
+        allowOutsideClick: false,
+        showConfirmButton: false, // ปิดปุ่มตกลงขณะโหลดดิงเพื่อความปลอดภัย
+        didOpen: () => {
+          Swal.showLoading();
+        }
+      });
+    }
+
     async function handleAuth(event, type) {
       event.preventDefault();
-      Swal.showLoading();
+      showGlobalLoading(type === 'login' ? 'กำลังตรวจสอบสิทธิ์เข้าสู่ระบบ...' : 'กำลังบันทึกข้อมูลสมัครสมาชิก...');
 
       let data = {};
       if (type === 'login') {
@@ -289,27 +318,42 @@
           if (type === 'login') {
             localStorage.setItem('shortUrlUser', JSON.stringify(result.user));
             currentUser = result.user;
-            Swal.fire('สำเร็จ', 'เข้าสู่ระบบเรียบร้อยแล้ว', 'success');
+            MySwal.fire('สำเร็จ', 'เข้าสู่ระบบเรียบร้อยแล้ว', 'success');
             checkUserSession();
           } else {
-            Swal.fire('สำเร็จ', 'สมัครสมาชิกเสร็จสมบูรณ์ สามารถเข้าสู่ระบบได้ทันที', 'success');
+            MySwal.fire('สำเร็จ', 'สมัครสมาชิกเสร็จสมบูรณ์ สามารถเข้าสู่ระบบได้ทันที', 'success');
             switchAuthTab('login');
           }
         } else {
-          Swal.fire('ล้มเหลว', result.message, 'error');
+          MySwal.fire('ล้มเหลว', result.message, 'error');
         }
       } catch (err) {
-        Swal.fire('ข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ฐานข้อมูลหลังบ้านได้', 'error');
+        MySwal.fire('ข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ฐานข้อมูลหลังบ้านได้', 'error');
       }
     }
 
-    function logout() {
-      localStorage.removeItem('shortUrlUser');
-      currentUser = null;
-      checkUserSession();
+    async function logout() {
+      const confirm = await MySwal.fire({
+        title: 'ยืนยันการออกจากระบบ?',
+        text: "คุณต้องการออกจากระบบการจัดการคลังลิงก์ย่อใช่หรือไม่",
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#ef4444',
+        cancelButtonColor: '#6b7280',
+        confirmButtonText: 'ใช่, ออกจากระบบ',
+        cancelButtonText: 'ยกเลิก'
+      });
+
+      if (confirm.isConfirmed) {
+        localStorage.removeItem('shortUrlUser');
+        currentUser = null;
+        checkUserSession();
+        MySwal.fire('ออกจากระบบสำเร็จ', 'เซสชันเดิมถูกล้างเรียบร้อยแล้ว', 'success');
+      }
     }
 
     async function fetchUserLinks() {
+      showGlobalLoading('กำลังดึงข้อมูลสถิติล่าสุด...');
       try {
         const response = await fetch(API_URL, {
           method: 'POST',
@@ -339,16 +383,18 @@
               </tr>
             `;
           });
+          Swal.close();
         } else {
           tbody.innerHTML = `<tr><td colspan="4" class="p-8 text-center text-gray-400">ยังไม่มีลิงก์ย่อในระบบของคุณ เริ่มสร้างได้โดยปุ่มด้านบน</td></tr>`;
+          Swal.close();
         }
       } catch (err) {
-        console.error(err);
+        MySwal.fire('ข้อผิดพลาด', 'ไม่สามารถโหลดตารางข้อมูลสถิติได้', 'error');
       }
     }
 
     async function openCreateModal() {
-      const { value: url } = await Swal.fire({
+      const { value: url } = await MySwal.fire({
         title: 'ย่อลิงก์ปลายทางชิ้นใหม่',
         input: 'url',
         inputLabel: 'กรอก URL ที่ต้องการย่อลงระบบ',
@@ -362,7 +408,7 @@
       });
 
       if (url) {
-        Swal.showLoading();
+        showGlobalLoading('กำลังประมวลผลและสร้าง Short URL...');
         try {
           const response = await fetch(API_URL, {
             method: 'POST',
@@ -370,17 +416,17 @@
           });
           const result = await response.json();
           if (result.success) {
-            Swal.fire('สำเร็จ', 'ระบบสร้างลิงก์ย่อเสร็จสมบูรณ์เรียบร้อย', 'success');
+            MySwal.fire('สำเร็จ', 'ระบบสร้างลิงก์ย่อเสร็จสมบูรณ์เรียบร้อย', 'success');
             fetchUserLinks();
           }
         } catch (e) {
-          Swal.fire('เกิดข้อผิดพลาด', 'บันทึกข้อมูลลิงก์ไม่สำเร็จ', 'error');
+          MySwal.fire('เกิดข้อผิดพลาด', 'บันทึกข้อมูลลิงก์ไม่สำเร็จ', 'error');
         }
       }
     }
 
     async function deleteLink(shortId) {
-      const confirm = await Swal.fire({
+      const confirm = await MySwal.fire({
         title: 'ยืนยันการลบลิงก์?',
         text: "เมื่อลบแล้ว สิทธิ์การสแกนผ่าน QR Code เดิมจะไม่ทำงาน",
         icon: 'warning',
@@ -391,7 +437,7 @@
       });
 
       if (confirm.isConfirmed) {
-        Swal.showLoading();
+        showGlobalLoading('กำลังลบข้อมูลออกจากระบบฐานข้อมูล...');
         try {
           const response = await fetch(API_URL, {
             method: 'POST',
@@ -399,13 +445,13 @@
           });
           const result = await response.json();
           if (result.success) {
-            Swal.fire('ลบเสร็จสิ้น', result.message, 'success');
+            MySwal.fire('ลบเสร็จสิ้น', result.message, 'success');
             fetchUserLinks();
           } else {
-            Swal.fire('ล้มเหลว', result.message, 'error');
+            MySwal.fire('ล้มเหลว', result.message, 'error');
           }
         } catch (e) {
-          Swal.fire('เกิดข้อผิดพลาด', 'ไม่สามารถเชื่อมระบบเพื่อลบข้อมูลได้', 'error');
+          MySwal.fire('เกิดข้อผิดพลาด', 'ไม่สามารถเชื่อมระบบเพื่อลบข้อมูลได้', 'error');
         }
       }
     }
@@ -443,6 +489,7 @@
         },
         backgroundOptions: {
           color: bgColor,
+          transparent: false
         },
         imageOptions: {
           crossOrigin: "anonymous",
@@ -470,6 +517,8 @@
       document.getElementById('dashboard-section').classList.add('hidden');
       document.getElementById('scan-section').classList.remove('hidden');
       
+      showGlobalLoading('กำลังตรวจสอบความปลอดภัยและโฆษณา...');
+      
       try {
         const response = await fetch(API_URL, {
           method: 'POST',
@@ -481,7 +530,6 @@
           document.getElementById('btn-redirect').href = result.link.originalUrl;
           
           if (result.ad) {
-            // แสดงข้อความโฆษณาในกล่องแสดงผลหน้าเว็บ
             document.getElementById('ad-title').innerText = result.ad.title;
             document.getElementById('ad-desc').innerText = result.ad.description;
             
@@ -494,8 +542,8 @@
             }
             document.getElementById('ad-placeholder').classList.remove('hidden');
 
-            // แสดงโฆษณาเป็นแบบ Modal Popup SweetAlert2 ร่วมด้วยเพื่อความเด่นชัด
-            Swal.fire({
+            // ใช้ MySwal เพื่อให้แสดงปุ่ม X มุมขวาบนในหน้าต่างโฆษณา
+            MySwal.fire({
               title: `<strong>${result.ad.title}</strong>`,
               html: `
                 <div class="space-y-3">
@@ -503,19 +551,25 @@
                   <p class="text-sm text-gray-600">${result.ad.description}</p>
                 </div>
               `,
-              confirmButtonText: 'รับทราบข้อมูลความปลอดภัย',
+              confirmButtonText: 'เข้าสู่หน้าลิงก์ปลายทาง',
               confirmButtonColor: '#4f46e5'
             });
+          } else {
+            Swal.close();
           }
         } else {
-          Swal.fire({
+          MySwal.fire({
             icon: 'error',
             title: 'ไม่พบลิงก์นี้ในระบบ',
             text: 'ลิงก์ย่อถูกลบออกไป หรือไม่เคยบันทึกข้อมูลรหัส ID ดังกล่าว',
           });
         }
       } catch (err) {
-        console.error(err);
+        MySwal.fire({
+          icon: 'error',
+          title: 'เกิดข้อผิดพลาด',
+          text: 'ไม่สามารถติดต่อเซิร์ฟเวอร์ระบบย่อลิงก์เพื่อตรวจสอบสิทธิ์ได้',
+        });
       }
     }
   </script>
